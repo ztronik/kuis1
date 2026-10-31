@@ -368,17 +368,19 @@
         }
 
         // Muat daftar suara SpeechSynthesis saat browser siap
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
                 availableVoices = window.speechSynthesis.getVoices();
-            };
+            }
+        }
+        if ('speechSynthesis' in window) {
+            loadVoices();
+            window.speechSynthesis.onvoiceschanged = loadVoices;
         }
 
-        // Bank Soal Cadangan (Offline Fallback dengan struktur acak)
+        // Bank Soal Cadangan (Offline Fallback)
         const QUESTION_BANK = {
             TK: [
-                { q: "Apa warna daun pada tumbuh-tumbuhan yang sehat?", a: ["Hijau", "Merah", "Biru", "Ungu"], correct: "A" },
-                { q: "Hewan manakah yang memiliki suara 'Guk Guk'?", a: ["Kucing", "Anjing", "Sapi", "Ayam"], correct: "B" },
                 { q: "Berapakah jumlah jari pada satu tangan manusia?", a: ["3", "4", "5", "10"], correct: "C" },
                 { q: "Benda langit apa yang terbit di pagi hari dan menyinari bumi?", a: ["Bulan", "Bintang", "Matahari", "Awan"], correct: "C" },
                 { q: "Buah pisang yang sudah matang umumnya berwarna apa?", a: ["Kuning", "Hitam", "Biru", "Merah"], correct: "A" },
@@ -462,6 +464,9 @@
                 { q: "Perangkat jaringan yang berfungsi menghubungkan dua jaringan dengan segmen/subnet berbeda adalah...", a: ["Switch", "Hub", "Router", "Kabel UTP"], correct: "C" }
             ],
             KULIAH: [
+                { q: "Siapakah pencetus teori relativitas umum dan khusus?", a: ["Isaac Newton", "Albert Einstein", "Nikola Tesla", "Niels Bohr"], correct: "B" },
+                { q: "Metode penelitian yang berfokus pada analisis data numerik dan statistik disebut...", a: ["Kualitatif", "Kuantitatif", "Etnografi", "Fenomenologi"], correct: "B" },
+                { q: "Sistem pemerintahan di mana kekuasaan tertinggi berada di tangan rakyat dinamakan...", a: ["Monarki", "Oligarki", "Demokrasi", "Autokrasi"], correct: "C" }
             ],
             LOGIKA: [
                 { q: "Ada satu keluarga punya 5 anak laki-laki. Setiap anak laki-laki punya 1 saudara perempuan. Berapa total anak dalam keluarga tersebut?", a: ["6 anak", "10 anak", "5 anak", "11 anak"], correct: "A" },
@@ -481,7 +486,7 @@
                 { q: "Jika dibalik akan bertambah sepertiga dari nilainya. Angka berapakah itu?", a: ["6", "9", "8", "3"], correct: "A" }
             ],
             LUCU: [
-                { q: "Ayam apa yang paling besar dan kuat di dunia?", a: ["Ayam Semesta", "Ayam Jantan", "Ayam Kampun", "Ayam Geprek"], correct: "A" },
+                { q: "Ayam apa yang paling besar dan kuat di dunia?", a: ["Ayam Semesta", "Ayam Jantan", "Ayam Kampung", "Ayam Geprek"], correct: "A" },
                 { q: "Ban apa yang kalau diinjak sangat sakit dan membuat teriak?", a: ["Bancet (Banci)", "Banteng", "Bandit", "Ban Sepeda"], correct: "B" },
                 { q: "Kera apa yang kalau diusir malah tidak mau pergi dan tambah menempel?", a: ["Kerasan (Betah)", "Kera Sakti", "Kerabat", "Keranjang"], correct: "A" },
                 { q: "Rusa apa yang tidak bisa jalan dan sukanya diam saja?", a: ["Rusak", "Rusa Kutub", "Rusa Bawean", "Rusa Jawa"], correct: "A" },
@@ -498,77 +503,6 @@
                 { q: "Batu apa yang jika dilempar ke laut tidak tenggelam?", a: ["Batu Apung", "Batu Es", "Batu Akik", "Batu Kali"], correct: "A" }
             ]
         };
-
-        // State Game Variables
-        // Fitur Suara Pembawa Acara (Host Text-to-Speech) dengan Suara Bebas Blokir HP
-        function speakHost(text) {
-            if (!soundEnabled) return;
-            unlockAudio();
-
-            if (currentAudioElement) {
-                currentAudioElement.pause();
-                currentAudioElement = null;
-            }
-
-            // Bersihkan simbol baca agar pembacaan lebih halus di HP
-            const cleanText = text.replace(/[*_#]/g, '');
-
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Stop ucapan sebelumnya
-
-                const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.9;
-                utterance.pitch = 0.95;
-
-                if (availableVoices.length === 0) {
-                    availableVoices = window.speechSynthesis.getVoices();
-                }
-                const idVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID') || v.lang.includes('in'));
-                if (idVoice) {
-                    utterance.voice = idVoice;
-                }
-
-                // Handler kegagalan audio di HP
-                utterance.onerror = () => {
-                    playSynthesizedVoiceFallback(cleanText);
-                };
-
-                window.speechSynthesis.speak(utterance);
-            } else {
-                playSynthesizedVoiceFallback(cleanText);
-            }
-        }
-
-        // Fallback Suara Synthesizer Lisan jika HP Memblokir TTS Total
-        function playSynthesizedVoiceFallback(text) {
-            if (!audioCtx) return;
-            try {
-                const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                // Bunyi tone responsif pembawa acara
-                osc.frequency.setValueAtTime(350, now);
-                osc.frequency.exponentialRampToValueAtTime(450, now + 0.15);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            } catch(e) {}
-        }
-
-        // Tombol khusus Mobile untuk Aktifkan & Tes Suara
-        function enableMobileAudio() {
-            unlockAudio();
-            playSound('click');
-            const banner = document.getElementById('mobile-sound-banner');
-            if (banner) banner.classList.add('hidden');
-            speakHost("Selamat datang! Suara pembawa acara kuis Millionaire telah aktif. Silakan pilih jenjang pendidikan.");
-        }
 
         // Conversi Angka Hadiah ke Kata-kata Bahasa Indonesia (Terbilang)
         function formatPrizeToWords(prizeStr) {
@@ -595,46 +529,89 @@
             return toWords(num).trim().replace(/\s+/g, ' ') + " rupiah";
         }
 
-        // Fitur Suara Pembawa Acara (Host Text-to-Speech) dengan Fallback Online untuk HP
+        // Fitur Suara Pembawa Acara Multi-Engine (Mengatasi Pembatasan HP & Browser)
         function speakHost(text) {
             if (!soundEnabled) return;
             unlockAudio();
 
-            // Hentikan audio yang sedang diputar sebelumnya jika ada
+            // Hentikan audio sebelumnya jika ada
             if (currentAudioElement) {
                 currentAudioElement.pause();
                 currentAudioElement = null;
             }
 
+            const cleanText = text.replace(/[*_#]/g, '');
+
+            // METODE 1: Web Speech API Bawaan
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Stop ucapan sebelumnya
+                window.speechSynthesis.cancel(); // Reset antrean
 
-                const utterance = new SpeechSynthesisUtterance(text);
+                const utterance = new SpeechSynthesisUtterance(cleanText);
                 utterance.lang = 'id-ID';
-                utterance.rate = 0.88; // Kecepatan santai & natural
-                utterance.pitch = 0.92; // Nada tenang & berwibawa
+                utterance.rate = 0.9;
+                utterance.pitch = 0.95;
 
-                // Cari paket suara Bahasa Indonesia
                 if (availableVoices.length === 0) {
                     availableVoices = window.speechSynthesis.getVoices();
                 }
-                const idVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+                const idVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID') || v.lang.includes('in'));
                 if (idVoice) {
                     utterance.voice = idVoice;
                 }
 
+                // Fallback jika SpeechSynthesis di HP error / silent
+                utterance.onerror = () => {
+                    playAudioStreamFallback(cleanText);
+                };
+
                 window.speechSynthesis.speak(utterance);
             } else {
-                // Fallback online jika SpeechSynthesis tidak didukung
-                try {
-                    const encodedText = encodeURIComponent(text);
-                    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=id&client=tw-ob`;
-                    currentAudioElement = new Audio(audioUrl);
-                    currentAudioElement.play().catch(e => console.log("Audio fallback play blocked", e));
-                } catch(e) {
-                    console.log("Audio TTS error", e);
-                }
+                playAudioStreamFallback(cleanText);
             }
+        }
+
+        // METODE 2: Stream TTS Online Fallback untuk HP
+        function playAudioStreamFallback(text) {
+            try {
+                const encodedText = encodeURIComponent(text.substring(0, 200)); // batasi panjang per kalimat
+                const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=id&client=tw-ob`;
+                currentAudioElement = new Audio(audioUrl);
+                currentAudioElement.play().catch(e => {
+                    // METODE 3: Web Audio Synth Sound Tone jika stream diblokir total oleh provider HP
+                    playSynthesizedVoiceFallback();
+                });
+            } catch(e) {
+                playSynthesizedVoiceFallback();
+            }
+        }
+
+        // METODE 3: Web Audio Synth Tone Backup
+        function playSynthesizedVoiceFallback() {
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.frequency.setValueAtTime(320, now);
+                osc.frequency.exponentialRampToValueAtTime(480, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch(e) {}
+        }
+
+        // Tombol khusus Mobile untuk Aktifkan & Tes Suara
+        function enableMobileAudio() {
+            unlockAudio();
+            playSound('click');
+            const banner = document.getElementById('mobile-sound-banner');
+            if (banner) banner.classList.add('hidden');
+            speakHost("Selamat datang! Suara pembawa acara kuis Millionaire telah aktif. Silakan pilih jenjang pendidikan.");
         }
 
         // Synthesizer Efek Suara (Beep / Chime / Correct / Wrong)
