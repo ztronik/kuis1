@@ -529,12 +529,12 @@
             return toWords(num).trim().replace(/\s+/g, ' ') + " rupiah";
         }
 
-        // Fitur Suara Pembawa Acara Multi-Engine (Mengatasi Pembatasan HP & Browser)
-        function speakHost(text) {
+        // Fitur Suara Pembawa Acara Menggunakan Gemini TTS API & Web Audio API
+        async function speakHost(text) {
             if (!soundEnabled) return;
             unlockAudio();
 
-            // Hentikan audio sebelumnya jika ada
+            // Hentikan audio sebelumnya jika sedang diputar
             if (currentAudioElement) {
                 currentAudioElement.pause();
                 currentAudioElement = null;
@@ -542,31 +542,115 @@
 
             const cleanText = text.replace(/[*_#]/g, '');
 
-            // METODE 1: Web Speech API Bawaan
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Reset antrean
+            // 1. Coba Generate Suara Natural via Gemini 2.5 Flash TTS API
+            try {
+                const payload = {
+                    contents: [{
+                        parts: [{ text: `Ucapkan secara tenang, santai, dan jelas seperti host kuis Who Wants to Be a Millionaire Indonesia: ${cleanText}` }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: "Puck" } // Voice natural, santai & tenang
+                            }
+                        }
+                    }
+                };
 
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType || "";
+
+                    if (audioData) {
+                        let sampleRate = 24000;
+                        const match = mimeType.match(/rate=(\d+)/);
+                        if (match) sampleRate = parseInt(match[1], 10);
+
+                        const pcmBuffer = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmBuffer);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+
+                        currentAudioElement = new Audio(audioUrl);
+                        await currentAudioElement.play();
+                        return; // Berhasil diputar via Gemini TTS!
+                    }
+                }
+            } catch (err) {
+                console.warn("Gemini TTS belum dapat dipanggil, menggunakan Web Speech API fallback:", err);
+            }
+
+            // 2. Fallback ke Web Speech API bawaan browser
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(cleanText);
                 utterance.lang = 'id-ID';
-                utterance.rate = 0.9;
-                utterance.pitch = 0.95;
+                utterance.rate = 0.88;
+                utterance.pitch = 0.92;
 
                 if (availableVoices.length === 0) {
                     availableVoices = window.speechSynthesis.getVoices();
                 }
                 const idVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID') || v.lang.includes('in'));
-                if (idVoice) {
-                    utterance.voice = idVoice;
-                }
-
-                // Fallback jika SpeechSynthesis di HP error / silent
-                utterance.onerror = () => {
-                    playAudioStreamFallback(cleanText);
-                };
+                if (idVoice) utterance.voice = idVoice;
 
                 window.speechSynthesis.speak(utterance);
-            } else {
-                playAudioStreamFallback(cleanText);
+            }
+        }
+
+        // Helper Konversi Base64 PCM 16-Bit ke WAV Blob untuk Web Audio
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16Data, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcm16Data.length * 2);
+            const view = new DataView(buffer);
+
+            // RIFF header
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16Data.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            // fmt subchunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            // data subchunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16Data.length * 2, true);
+
+            // Write PCM audio samples
+            let offset = 44;
+            for (let i = 0; i < pcm16Data.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16Data[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
             }
         }
 
