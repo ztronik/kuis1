@@ -117,50 +117,62 @@
         <!-- SCREEN 1: SELEKSI JENJANG PENDIDIKAN -->
         <section id="selection-screen" class="flex flex-col items-center justify-center py-8">
             <div class="text-center max-w-2xl mb-8">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-amber-400 font-tech mb-3">PILIH JENJANG PENDIDIKAN</h2>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-amber-400 font-tech mb-3">PILIH JENJANG PENDIDIKAN & KATEGORI</h2>
                 <p class="text-slate-300 text-sm md:text-base">Setiap jenjang memiliki tingkat kesulitan pertanyaan yang disesuaikan. Hadiah utama: <span class="text-yellow-400 font-bold">Rp 1.000.000.000</span>!</p>
                 <div class="mt-3 inline-flex items-center space-x-2 bg-blue-950/80 px-3 py-1 rounded-full border border-blue-500/30 text-xs text-blue-300">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Modus Pertanyaan Dinamis AI (Online / Auto Generated)</span>
+                    <span>Modus Pertanyaan Dinamis AI + Kategori Hiburan & Logika</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-3xl px-2">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl px-2">
                 <!-- TK -->
                 <button onclick="selectGrade('TK')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
                     <i class="fa-solid fa-shapes text-3xl text-pink-400 group-hover:scale-110 transition"></i>
                     <span class="text-lg font-bold font-tech text-white">TK / PAUD</span>
-                    <span class="text-xs text-slate-400 text-center">Pengenalan Warna, Angka & Hewan</span>
+                    <span class="text-xs text-slate-400 text-center">Warna, Angka & Hewan</span>
                 </button>
                 <!-- SD / MI -->
                 <button onclick="selectGrade('SD')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
                     <i class="fa-solid fa-school text-3xl text-red-400 group-hover:scale-110 transition"></i>
                     <span class="text-lg font-bold font-tech text-white">SD / MI</span>
-                    <span class="text-xs text-slate-400 text-center">Pengetahuan Dasar & Sains Sederhana</span>
+                    <span class="text-xs text-slate-400 text-center">Dasar & Sains</span>
                 </button>
                 <!-- SMP / MTs -->
                 <button onclick="selectGrade('SMP')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
                     <i class="fa-solid fa-graduation-cap text-3xl text-blue-400 group-hover:scale-110 transition"></i>
                     <span class="text-lg font-bold font-tech text-white">SMP / MTs</span>
-                    <span class="text-xs text-slate-400 text-center">Matematika Dasar, IPS & IPA</span>
+                    <span class="text-xs text-slate-400 text-center">Matematika, IPS & IPA</span>
                 </button>
                 <!-- SMA / MA -->
                 <button onclick="selectGrade('SMA')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
                     <i class="fa-solid fa-book-open text-3xl text-teal-400 group-hover:scale-110 transition"></i>
                     <span class="text-lg font-bold font-tech text-white">SMA / MA</span>
-                    <span class="text-xs text-slate-400 text-center">Logika, Sains & Pengetahuan Umum</span>
+                    <span class="text-xs text-slate-400 text-center">Logika & Sains</span>
                 </button>
                 <!-- SMK -->
                 <button onclick="selectGrade('SMK')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
                     <i class="fa-solid fa-gears text-3xl text-orange-400 group-hover:scale-110 transition"></i>
                     <span class="text-lg font-bold font-tech text-white">SMK</span>
-                    <span class="text-xs text-slate-400 text-center">Teknologi, Kejuruan & Terapan</span>
+                    <span class="text-xs text-slate-400 text-center">Teknologi & Kejuruan</span>
                 </button>
                 <!-- KULIAH -->
                 <button onclick="selectGrade('KULIAH')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
                     <i class="fa-solid fa-user-graduate text-3xl text-purple-400 group-hover:scale-110 transition"></i>
                     <span class="text-lg font-bold font-tech text-white">KULIAH / UMUM</span>
-                    <span class="text-xs text-slate-400 text-center">Wawasan Global, Sains Tingkat Lanjut</span>
+                    <span class="text-xs text-slate-400 text-center">Wawasan Global</span>
+                </button>
+                <!-- KATEGORI BARU: TEBAKAN LOGIKA -->
+                <button onclick="selectGrade('LOGIKA')" class="group p-5 bg-gradient-to-br from-yellow-900/60 to-slate-900 border-2 border-yellow-500/50 hover:border-amber-300 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-brain text-3xl text-yellow-400 group-hover:scale-110 transition animate-pulse"></i>
+                    <span class="text-lg font-bold font-tech text-yellow-400">TEBAKAN LOGIKA</span>
+                    <span class="text-xs text-slate-300 text-center">Asah Otak & Riddle Teka-Teki</span>
+                </button>
+                <!-- KATEGORI BARU: TEBAKAN LUCU -->
+                <button onclick="selectGrade('LUCU')" class="group p-5 bg-gradient-to-br from-emerald-900/60 to-slate-900 border-2 border-emerald-500/50 hover:border-green-300 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-face-laugh-squint text-3xl text-emerald-400 group-hover:scale-110 transition animate-bounce"></i>
+                    <span class="text-lg font-bold font-tech text-emerald-400">TEBAKAN LUCU</span>
+                    <span class="text-xs text-slate-300 text-center">Plesetan & Humor Santai</span>
                 </button>
             </div>
         </section>
@@ -329,6 +341,39 @@
             "1.000.000.000"  // HADIAH UTAMA (Level 15)
         ];
 
+        // Global Audio & Game State Variables
+        let audioCtx = null;
+        let soundEnabled = true;
+        let availableVoices = [];
+        let currentAudioElement = null;
+        let currentGrade = '';
+        let currentLevel = 0;
+        let activeQuestions = [];
+        let currentQuestion = null;
+        let pendingOption = null;
+        let selectedOption = null;
+        let lifelinesUsed = { '5050': false, 'phone': false, 'audience': false };
+
+        // Membuka kunci AudioContext untuk browser (terutama mobile & browser security policy)
+        function unlockAudio() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Muat daftar suara SpeechSynthesis saat browser siap
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                availableVoices = window.speechSynthesis.getVoices();
+            };
+        }
+
         // Bank Soal Cadangan (Offline Fallback dengan struktur acak)
         const QUESTION_BANK = {
             TK: [
@@ -417,71 +462,103 @@
                 { q: "Perangkat jaringan yang berfungsi menghubungkan dua jaringan dengan segmen/subnet berbeda adalah...", a: ["Switch", "Hub", "Router", "Kabel UTP"], correct: "C" }
             ],
             KULIAH: [
-                { q: "Siapakah pencetus teori kuantum fisika yang terkenal dengan konsep dualisme gelombang-partikel?", a: ["Max Planck", "Albert Einstein", "Niels Bohr", "Erwin Schrödinger"], correct: "A" },
-                { q: "Metode penelitian yang bertujuan menguji hipotesis melalui manipulasi variabel independen disebut...", a: ["Kualitatif Deskriptif", "Eksperimental", "Studi Kasus", "Etnografi"], correct: "B" },
-                { q: "Dalam ilmu hukum, asas yang menyatakan bahwa undang-undang tidak boleh berlaku surut dinamakan...", a: ["Lex Specialis Derogat Legi Generali", "Asas Legalitas (Non-Retroaktif)", "Presumption of Innocence", "Lex Superior Derogat Legi Inferiori"], correct: "B" },
-                { q: "Partikel subatomik yang dipercaya memberikan massa pada partikel dasar lain (dikenal 'God Particle') adalah...", a: ["Quark", "Higgs Boson", "Lepton", "Photon"], correct: "B" },
-                { q: "Siapakah sosiolog yang mempopulerkan teori 'Struktural Fungsionalisme'?", a: ["Max Weber", "Emile Durkheim", "Talcott Parsons", "Karl Marx"], correct: "C" },
-                { q: "Struktur data linier yang menerapkan prinsip LIFO (Last In First Out) dinamakan...", a: ["Queue", "Stack", "Array", "Linked List"], correct: "B" },
-                { q: "Proses biokimia konversi glukosa menjadi asam piruvat di dalam sitoplasma dinamakan...", a: ["Glikolisis", "Siklus Krebs", "Transpor Elektron", "Dekarboksilasi Oksidatif"], correct: "A" },
-                { q: "Siapakah tokoh filsuf modern yang terkenal dengan ungkapan 'Cogito, ergo sum'?", a: ["Immanuel Kant", "Rene Descartes", "John Locke", "Friedrich Nietzsche"], correct: "B" },
-                { q: "Fenomena ekonomi di mana tingkat inflasi tinggi terjadi secara bersamaan dengan stagnasi pertumbuhan ekonomi disebut...", a: ["Deflasi", "Stagflasi", "Hiperinflasi", "Resesi"], correct: "B" },
-                { q: "Perjanjian internasional tentang pengurangan emisi gas rumah kaca yang disepakati tahun 1997 di Jepang adalah...", a: ["Protokol Kyoto", "Perjanjian Paris", "Konvensi Jenewa", "Protokol Montreal"], correct: "A" },
-                { q: "Algoritma enkripsi asimetris yang paling populer berdasarkan faktor kesusahan faktorisasi bilangan prima adalah...", a: ["AES", "DES", "RSA", "Blowfish"], correct: "C" },
-                { q: "Filsuf kontemporer pencetus teori 'Communicative Action' dan konsep 'Public Sphere' adalah...", a: ["Michel Foucault", "Jürgen Habermas", "Jacques Derrida", "Slavoj Žižek"], correct: "B" },
-                { q: "Zat kimia neurotransmiter utama di otak yang berperan penting dalam perasaan senang, motivasi, dan penghargaan adalah...", a: ["Serotonin", "Dopamin", "Asetilkolin", "GABA"], correct: "B" },
-                { q: "Dalam kalkulus, Teorema Dasar Kalkulus menghubungkan dua konsep utama yaitu...", a: ["Limit & Kontinuitas", "Diferensial & Integral", "Vektor & Matriks", "Deret & Urutan"], correct: "B" },
-                { q: "Penghargaan tertinggi di dunia untuk bidang matematika (setara Hadiah Nobel) dinamakan...", a: ["Turing Award", "Fields Medal", "Pritzker Prize", "Pulitzer Prize"], correct: "B" }
+            ],
+            LOGIKA: [
+                { q: "Ada satu keluarga punya 5 anak laki-laki. Setiap anak laki-laki punya 1 saudara perempuan. Berapa total anak dalam keluarga tersebut?", a: ["6 anak", "10 anak", "5 anak", "11 anak"], correct: "A" },
+                { q: "Apa yang selalu datang tapi tidak pernah benar-benar tiba?", a: ["Besok", "Hari Ini", "Kemarin", "Kereta"], correct: "A" },
+                { q: "Semakin banyak kamu mengambilnya, semakin banyak yang kamu tinggalkan di belakang. Apakah itu?", a: ["Jejak Langkah", "Uang", "Kenangan", "Waktu"], correct: "A" },
+                { q: "Jika ada 3 buah apel dan kamu mengambil 2 buah, berapa buah apel yang KAMU miliki?", a: ["2 buah", "1 buah", "3 buah", "0 buah"], correct: "A" },
+                { q: "Saya punya kota tapi tidak ada rumah, punya hutan tapi tidak ada pohon, punya sungai tapi tidak ada air. Siapakah saya?", a: ["Peta", "Lukisan", "Mimpi", "Cermin"], correct: "A" },
+                { q: "Apa yang menjadi lebih basah semakin banyak ia mengeringkan?", a: ["Handuk", "Spons", "Matahari", "Angin"], correct: "A" },
+                { q: "Apa yang bisa patah tanpa harus disentuh atau dipegang sama sekali?", a: ["Janji", "Kaca", "Piring", "Tali"], correct: "A" },
+                { q: "Semakin banyak isi saya, semakin ringan berat saya. Apakah saya?", a: ["Balon Udara", "Kardus", "Emas", "Lilin"], correct: "A" },
+                { q: "Ayah Mary punya 5 anak: Nana, Nene, Nini, Nono. Siapa nama anak kelima?", a: ["Mary", "Nunu", "Nani", "Neno"], correct: "A" },
+                { q: "Apa yang punya leher tetapi tidak punya kepala?", a: ["Botol", "Baju", "Gitar", "Meja"], correct: "A" },
+                { q: "Benda apa yang bisa bergerak naik dan turun tetapi tidak pernah benar-benar berpindah tempat?", a: ["Tangga", "Lift", "Awan", "Mobil"], correct: "A" },
+                { q: "Apa yang selalu bisa kamu pegang hanya dengan tangan kananmu, tapi tidak bisa dengan tangan kirimu?", a: ["Siku Tangan Kiri", "Tangan Kanan", "Kaki Kiri", "Jari Kanan"], correct: "A" },
+                { q: "Benda apakah yang jika dipotong malah semakin tinggi?", a: ["Celana", "Rambut", "Pohon", "Kertas"], correct: "A" },
+                { q: "Bisa melintas di atas air tanpa menimbulkan riak air, dan melintas di atas hutan tanpa merusak pohon. Apakah itu?", a: ["Bayangan", "Angin", "Burung", "Awan"], correct: "A" },
+                { q: "Jika dibalik akan bertambah sepertiga dari nilainya. Angka berapakah itu?", a: ["6", "9", "8", "3"], correct: "A" }
+            ],
+            LUCU: [
+                { q: "Ayam apa yang paling besar dan kuat di dunia?", a: ["Ayam Semesta", "Ayam Jantan", "Ayam Kampun", "Ayam Geprek"], correct: "A" },
+                { q: "Ban apa yang kalau diinjak sangat sakit dan membuat teriak?", a: ["Bancet (Banci)", "Banteng", "Bandit", "Ban Sepeda"], correct: "B" },
+                { q: "Kera apa yang kalau diusir malah tidak mau pergi dan tambah menempel?", a: ["Kerasan (Betah)", "Kera Sakti", "Kerabat", "Keranjang"], correct: "A" },
+                { q: "Rusa apa yang tidak bisa jalan dan sukanya diam saja?", a: ["Rusak", "Rusa Kutub", "Rusa Bawean", "Rusa Jawa"], correct: "A" },
+                { q: "Lemari apa yang bisa dimasukkan ke dalam kantong saku celana?", a: ["Lemaribuan (Lembar ribuan)", "Lemari Es", "Lemari Kayu", "Lemari Besi"], correct: "A" },
+                { q: "Buah apa yang kalau dipotong bikin kita menangis dan melayang?", a: ["Buah-aya darat", "Buah Naga", "Buah Durian", "Buah Nangka"], correct: "A" },
+                { q: "Gajah apa yang belalainya sangat pendek?", a: ["Gajah kena Flu", "Gajah Pesek", "Gajah Kecil", "Gajah Lampung"], correct: "A" },
+                { q: "Nasi apa yang paling dingin di dunia?", a: ["Nasi-hat (Nasihat)", "Nasi Goreng", "Nasi Uduk", "Nasi Padang"], correct: "A" },
+                { q: "Hewan apa yang kalau jalan mundur dan lambat sekali?", a: ["Siput bawa ransel", "Undur-undur", "Kepiting", "Kura-kura"], correct: "A" },
+                { q: "Pohon apa yang paling banyak ditemukan saat hari raya Idul Fitri?", a: ["Pohon Maaf (Mohon Maaf)", "Pohon Kelapa", "Pohon Kurma", "Pohon Pisang"], correct: "A" },
+                { q: "Kecoa apa yang kalau terbang bikin semua orang kagum?", a: ["Kecoak-an (Kecakapan)", "Kecoa Terbang", "Kecoa Garuda", "Kecoa Super"], correct: "A" },
+                { q: "Kenapa nyamuk kalau terbang sukanya berbisik di telinga?", a: ["Karena tidak punya mulut besar", "Karena sedang berbisik rahasia", "Takut dimarahi ibunya", "Biar tidak kedengaran"], correct: "A" },
+                { q: "Ikan apa yang paling suka berhenti di jalan?", a: ["Ikan Paus (Pause)", "Ikan Hiu", "Ikan Mas", "Ikan Lele"], correct: "A" },
+                { q: "Sayur apa yang jago bertarung dan pandai bela diri?", a: ["Bayam-nita (Bayonet)", "Sawi", "Kangkung", "Brokoli"], correct: "A" },
+                { q: "Batu apa yang jika dilempar ke laut tidak tenggelam?", a: ["Batu Apung", "Batu Es", "Batu Akik", "Batu Kali"], correct: "A" }
             ]
         };
 
         // State Game Variables
-        let currentGrade = "";
-        let currentLevel = 0; // 0 to 14
-        let activeQuestions = [];
-        let currentQuestion = null;
-        let selectedOption = null;
-        let pendingOption = null; // Menampung sementara jawaban sebelum dikonfirmasi
-        let lifelinesUsed = { '5050': false, 'phone': false, 'audience': false };
-        let soundEnabled = true;
+        // Fitur Suara Pembawa Acara (Host Text-to-Speech) dengan Suara Bebas Blokir HP
+        function speakHost(text) {
+            if (!soundEnabled) return;
+            unlockAudio();
 
-        // Audio Effects (Web Audio API Synthesizer)
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
-        let availableVoices = [];
-        let isAudioUnlocked = false;
-        let currentAudioElement = null; // Untuk pemutaran audio fallback di HP
+            if (currentAudioElement) {
+                currentAudioElement.pause();
+                currentAudioElement = null;
+            }
 
-        // Inisialisasi daftar suara secara asynchronous untuk hosting online & HP Mobile
-        function initVoices() {
+            // Bersihkan simbol baca agar pembacaan lebih halus di HP
+            const cleanText = text.replace(/[*_#]/g, '');
+
             if ('speechSynthesis' in window) {
-                availableVoices = window.speechSynthesis.getVoices();
-                if (window.speechSynthesis.onvoiceschanged !== undefined) {
-                    window.speechSynthesis.onvoiceschanged = () => {
-                        availableVoices = window.speechSynthesis.getVoices();
-                    };
+                window.speechSynthesis.cancel(); // Stop ucapan sebelumnya
+
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9;
+                utterance.pitch = 0.95;
+
+                if (availableVoices.length === 0) {
+                    availableVoices = window.speechSynthesis.getVoices();
                 }
+                const idVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID') || v.lang.includes('in'));
+                if (idVoice) {
+                    utterance.voice = idVoice;
+                }
+
+                // Handler kegagalan audio di HP
+                utterance.onerror = () => {
+                    playSynthesizedVoiceFallback(cleanText);
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                playSynthesizedVoiceFallback(cleanText);
             }
         }
-        initVoices();
 
-        // Mengaktifkan Audio Context & Speech Synthesis khusus Seluler (Mobile/HP)
-        function unlockAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioCtx();
-            }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            
-            // "Pancingan" khusus peramban seluler (Safari iOS / Chrome Mobile)
-            if ('speechSynthesis' in window && !isAudioUnlocked) {
-                availableVoices = window.speechSynthesis.getVoices();
-                const dummyUtterance = new SpeechSynthesisUtterance("a");
-                dummyUtterance.volume = 0.01;
-                window.speechSynthesis.speak(dummyUtterance);
-                isAudioUnlocked = true;
-            }
+        // Fallback Suara Synthesizer Lisan jika HP Memblokir TTS Total
+        function playSynthesizedVoiceFallback(text) {
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                // Bunyi tone responsif pembawa acara
+                osc.frequency.setValueAtTime(350, now);
+                osc.frequency.exponentialRampToValueAtTime(450, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch(e) {}
         }
 
         // Tombol khusus Mobile untuk Aktifkan & Tes Suara
