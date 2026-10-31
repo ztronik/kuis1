@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who Wants to Be a Millionaire - Indonesia (Semua Jenjang)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background: radial-gradient(circle at center, #1a1c4b 0%, #08091a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        .font-tech {
+            font-family: 'Orbitron', sans-serif;
+        }
+        /* Custom Hexagon Button Effect */
+        .option-btn {
+            background: linear-gradient(180deg, #101432 0%, #08091a 100%);
+            border: 2px solid #3b82f6;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%);
+            border-color: #93c5fd;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+        .option-btn.selected {
+            background: linear-gradient(180deg, #d97706 0%, #b45309 100%) !important;
+            border-color: #fef08a !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.8);
+        }
+        .option-btn.correct {
+            background: linear-gradient(180deg, #15803d 0%, #166534 100%) !important;
+            border-color: #86efac !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+            animation: pulse-green 0.5s infinite alternate;
+        }
+        .option-btn.wrong {
+            background: linear-gradient(180deg, #b91c1c 0%, #991b1b 100%) !important;
+            border-color: #fca5a5 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+        }
+        @keyframes pulse-green {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+        /* Ladder active highlight */
+        .ladder-item.active {
+            background: linear-gradient(90deg, #d97706 0%, #b45309 100%);
+            color: #ffffff;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
+        }
+        .ladder-item.safe-zone {
+            color: #60a5fa;
+        }
+        .ladder-item.active.safe-zone {
+            color: #ffffff;
+        }
+        /* Custom modal backdrop */
+        .modal-bg {
+            background: rgba(4, 6, 20, 0.85);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between overflow-x-hidden">
+
+    <!-- Header / Navbar -->
+    <header class="p-4 bg-slate-900/80 border-b border-blue-900/50 flex justify-between items-center backdrop-blur z-20">
+        <div class="flex items-center space-x-3">
+            <!-- Tombol Home / Pilih Jenjang -->
+            <button id="nav-home-btn" onclick="goToHome()" class="px-3 py-1.5 bg-blue-950/80 hover:bg-blue-800 border border-blue-500/50 rounded-lg text-amber-400 font-tech text-xs md:text-sm font-semibold transition flex items-center space-x-2 shadow-md">
+                <i class="fa-solid fa-house"></i>
+                <span class="hidden sm:inline">Pilih Jenjang</span>
+            </button>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-500 to-blue-600 flex items-center justify-center font-tech font-bold text-xl shadow-lg border border-yellow-300">
+                1M
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-yellow-500 font-tech">
+                    WHO WANTS TO BE A MILLIONAIRE?
+                </h1>
+                <p class="text-xs text-blue-300">Edisi Pendidikan Indonesia</p>
+            </div>
+        </div>
+        <div id="current-level-tag" class="hidden md:block bg-blue-950/80 px-4 py-1.5 rounded-full border border-blue-500/30 text-sm font-semibold text-yellow-400">
+            Pilih Jenjang Terlebih Dahulu
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 flex flex-col justify-center">
+
+        <!-- SCREEN 1: SELEKSI JENJANG PENDIDIKAN -->
+        <section id="selection-screen" class="flex flex-col items-center justify-center py-8">
+            <div class="text-center max-w-2xl mb-8">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-amber-400 font-tech mb-3">PILIH JENJANG PENDIDIKAN</h2>
+                <p class="text-slate-300 text-sm md:text-base">Setiap jenjang memiliki tingkat kesulitan pertanyaan yang disesuaikan. Hadiah utama: <span class="text-yellow-400 font-bold">Rp 1.000.000.000</span>!</p>
+                <div class="mt-3 inline-flex items-center space-x-2 bg-blue-950/80 px-3 py-1 rounded-full border border-blue-500/30 text-xs text-blue-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Modus Pertanyaan Dinamis AI (Online / Auto Generated)</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-3xl px-2">
+                <!-- TK -->
+                <button onclick="selectGrade('TK')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-shapes text-3xl text-pink-400 group-hover:scale-110 transition"></i>
+                    <span class="text-lg font-bold font-tech text-white">TK / PAUD</span>
+                    <span class="text-xs text-slate-400 text-center">Pengenalan Warna, Angka & Hewan</span>
+                </button>
+                <!-- SD / MI -->
+                <button onclick="selectGrade('SD')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-school text-3xl text-red-400 group-hover:scale-110 transition"></i>
+                    <span class="text-lg font-bold font-tech text-white">SD / MI</span>
+                    <span class="text-xs text-slate-400 text-center">Pengetahuan Dasar & Sains Sederhana</span>
+                </button>
+                <!-- SMP / MTs -->
+                <button onclick="selectGrade('SMP')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-graduation-cap text-3xl text-blue-400 group-hover:scale-110 transition"></i>
+                    <span class="text-lg font-bold font-tech text-white">SMP / MTs</span>
+                    <span class="text-xs text-slate-400 text-center">Matematika Dasar, IPS & IPA</span>
+                </button>
+                <!-- SMA / MA -->
+                <button onclick="selectGrade('SMA')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-book-open text-3xl text-teal-400 group-hover:scale-110 transition"></i>
+                    <span class="text-lg font-bold font-tech text-white">SMA / MA</span>
+                    <span class="text-xs text-slate-400 text-center">Logika, Sains & Pengetahuan Umum</span>
+                </button>
+                <!-- SMK -->
+                <button onclick="selectGrade('SMK')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-gears text-3xl text-orange-400 group-hover:scale-110 transition"></i>
+                    <span class="text-lg font-bold font-tech text-white">SMK</span>
+                    <span class="text-xs text-slate-400 text-center">Teknologi, Kejuruan & Terapan</span>
+                </button>
+                <!-- KULIAH -->
+                <button onclick="selectGrade('KULIAH')" class="group p-5 bg-gradient-to-br from-indigo-900/60 to-slate-900 border-2 border-indigo-500/40 hover:border-amber-400 rounded-xl transition duration-300 flex flex-col items-center justify-center space-y-2 hover:scale-105 shadow-lg">
+                    <i class="fa-solid fa-user-graduate text-3xl text-purple-400 group-hover:scale-110 transition"></i>
+                    <span class="text-lg font-bold font-tech text-white">KULIAH / UMUM</span>
+                    <span class="text-xs text-slate-400 text-center">Wawasan Global, Sains Tingkat Lanjut</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: GAMEPLAY ARENA (Hidden by default) -->
+        <section id="game-screen" class="hidden grid-cols-1 lg:grid-cols-4 gap-6 items-start my-auto">
+            
+            <!-- LEFT / TOP AREA: QUIZ AREA (3 Cols) -->
+            <div class="lg:col-span-3 flex flex-col justify-between space-y-6">
+                
+                <!-- Bantuan (Lifelines) & Controls Header -->
+                <div class="flex justify-between items-center bg-slate-900/80 p-3 rounded-xl border border-blue-800/40 flex-wrap gap-2">
+                    <!-- Tombol Kembali Ke Jenjang / Back -->
+                    <button onclick="confirmBackToSelection()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-bold text-slate-200 transition flex items-center space-x-1 shadow-md">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Ganti Jenjang</span>
+                    </button>
+
+                    <div class="flex space-x-3">
+                        <!-- 50:50 -->
+                        <button id="lifeline-5050" onclick="useLifeline('5050')" class="w-12 h-12 rounded-full border-2 border-amber-400 bg-gradient-to-b from-blue-900 to-slate-900 hover:from-amber-600 hover:to-amber-800 font-tech font-bold text-amber-300 flex items-center justify-center shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed">
+                            50:50
+                        </button>
+                        <!-- Phone a Friend -->
+                        <button id="lifeline-phone" onclick="useLifeline('phone')" class="w-12 h-12 rounded-full border-2 border-amber-400 bg-gradient-to-b from-blue-900 to-slate-900 hover:from-amber-600 hover:to-amber-800 font-tech font-bold text-amber-300 flex items-center justify-center shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-phone"></i>
+                        </button>
+                        <!-- Ask Audience -->
+                        <button id="lifeline-audience" onclick="useLifeline('audience')" class="w-12 h-12 rounded-full border-2 border-amber-400 bg-gradient-to-b from-blue-900 to-slate-900 hover:from-amber-600 hover:to-amber-800 font-tech font-bold text-amber-300 flex items-center justify-center shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-users"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <!-- Menyerah / Stop -->
+                        <button onclick="walkAway()" class="px-3 py-1.5 bg-red-900/60 hover:bg-red-700 border border-red-500 rounded-lg text-xs font-bold text-red-200 transition">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Bring Home Money
+                        </button>
+                        <!-- Toggle Music / Sound -->
+                        <button onclick="toggleAudio()" id="audio-btn" class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-600 flex items-center justify-center text-slate-300 hover:text-white">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timer / Current Question Prize Info -->
+                <div class="flex justify-between items-center px-4">
+                    <span id="question-number-tag" class="text-sm font-tech text-blue-300 tracking-widest">SOAL 1 DARI 15</span>
+                    <span id="question-prize-tag" class="text-xl font-tech font-extrabold text-yellow-400 tracking-wider">Rp 50.000</span>
+                </div>
+
+                <!-- Box Pertanyaan -->
+                <div class="relative bg-gradient-to-b from-blue-950 to-slate-950 border-2 border-blue-500/60 rounded-2xl p-6 md:p-8 min-h-[140px] flex items-center justify-center text-center shadow-2xl">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 px-4 py-0.5 rounded-full text-xs font-bold uppercase tracking-widest">
+                        Pertanyaan
+                    </div>
+                    <p id="question-text" class="text-lg md:text-2xl font-bold leading-relaxed text-slate-100">
+                        Memuat pertanyaan...
+                    </p>
+                </div>
+
+                <!-- Box Konfirmasi Kunci Jawaban (Ya / Tidak) -->
+                <div id="confirm-box" class="hidden bg-slate-900/95 border-2 border-amber-400 p-4 rounded-xl text-center shadow-xl animate-fade-in flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-left">
+                        <p class="text-xs text-amber-300 font-tech uppercase tracking-wider">Jawaban Terpilih: <span id="selected-opt-label" class="text-white font-bold text-base">A</span></p>
+                        <p class="text-sm md:text-base font-bold text-white">Apakah Anda yakin ingin mengunci jawaban ini?</p>
+                    </div>
+                    <div class="flex items-center space-x-3 w-full sm:w-auto">
+                        <button onclick="confirmLockOption(true)" class="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-slate-950 font-tech font-extrabold rounded-lg shadow-lg transition flex items-center justify-center space-x-1 text-sm">
+                            <i class="fa-solid fa-check"></i>
+                            <span>YA, KUNCI</span>
+                        </button>
+                        <button onclick="confirmLockOption(false)" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-tech font-bold rounded-lg shadow-md transition flex items-center justify-center space-x-1 text-sm">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>TIDAK</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid Pilihan Jawaban (A, B, C, D) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="selectOption('A')" id="btn-opt-A" class="option-btn p-4 rounded-xl flex items-center text-left space-x-3 text-slate-200 font-semibold text-base md:text-lg">
+                        <span class="text-yellow-400 font-tech font-bold text-xl">A:</span>
+                        <span id="text-opt-A" class="flex-1">Pilihan A</span>
+                    </button>
+                    <button onclick="selectOption('B')" id="btn-opt-B" class="option-btn p-4 rounded-xl flex items-center text-left space-x-3 text-slate-200 font-semibold text-base md:text-lg">
+                        <span class="text-yellow-400 font-tech font-bold text-xl">B:</span>
+                        <span id="text-opt-B" class="flex-1">Pilihan B</span>
+                    </button>
+                    <button onclick="selectOption('C')" id="btn-opt-C" class="option-btn p-4 rounded-xl flex items-center text-left space-x-3 text-slate-200 font-semibold text-base md:text-lg">
+                        <span class="text-yellow-400 font-tech font-bold text-xl">C:</span>
+                        <span id="text-opt-C" class="flex-1">Pilihan C</span>
+                    </button>
+                    <button onclick="selectOption('D')" id="btn-opt-D" class="option-btn p-4 rounded-xl flex items-center text-left space-x-3 text-slate-200 font-semibold text-base md:text-lg">
+                        <span class="text-yellow-400 font-tech font-bold text-xl">D:</span>
+                        <span id="text-opt-D" class="flex-1">Pilihan D</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT AREA: PRIZE LADDER (1 Col) -->
+            <div class="bg-slate-900/90 border border-blue-800/40 rounded-xl p-4 flex flex-col justify-between shadow-xl">
+                <h3 class="text-center font-tech font-bold text-sm text-amber-400 pb-2 border-b border-slate-800 tracking-wider">
+                    TANGGA HADIAH
+                </h3>
+                <div id="money-ladder" class="flex flex-col space-y-1 my-3 text-sm font-tech">
+                    <!-- Populated dynamically via JS -->
+                </div>
+                <div class="text-xs text-center text-slate-400 pt-2 border-t border-slate-800">
+                    *Tingkat 5 & 10 adalah Titik Aman
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="p-3 text-center text-xs text-slate-500 border-t border-slate-900">
+        &copy; Millionaire Indonesia Quiz Game • Multi-Jenjang Pendidikan
+    </footer>
+
+    <!-- MODAL: LIFELINE / RESULT / DIALOG -->
+    <div id="game-modal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-amber-400/80 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl relative">
+            <h3 id="modal-title" class="text-2xl font-bold font-tech text-yellow-400 mb-3">JUDUL MODAL</h3>
+            <div id="modal-body" class="text-slate-200 text-sm md:text-base mb-6 leading-relaxed">
+                Isi pesan modal...
+            </div>
+            <div id="modal-actions" class="flex justify-center space-x-3">
+                <button id="modal-primary-btn" onclick="closeModal()" class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-bold rounded-lg hover:from-amber-400 hover:to-yellow-500 transition shadow-lg">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOADING SOAL ONLINE -->
+    <div id="loading-modal" class="fixed inset-0 modal-bg z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-blue-500/80 rounded-2xl max-w-md w-full p-8 text-center shadow-2xl flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <h3 class="text-xl font-bold font-tech text-yellow-400 mb-2">MENYUSUN SOAL BARU...</h3>
+            <p id="loading-text" class="text-slate-300 text-sm">Host sedang menyiapkan 15 pertanyaan unik secara online untuk jenjang Anda.</p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT GAME LOGIC -->
+    <script>
+        // Data Tingkat Hadiah (15 Level)
+        const PRIZE_LADDER = [
+            "50.000",
+            "100.000",
+            "200.000",
+            "300.000",
+            "500.000",       // Titik Aman 1 (Level 5)
+            "1.000.000",
+            "2.000.000",
+            "4.000.000",
+            "8.000.000",
+            "16.000.000",    // Titik Aman 2 (Level 10)
+            "32.000.000",
+            "64.000.000",
+            "125.000.000",
+            "250.000.000",
+            "1.000.000.000"  // HADIAH UTAMA (Level 15)
+        ];
+
+        // Bank Soal Cadangan (Offline Fallback dengan struktur acak)
+        const QUESTION_BANK = {
+            TK: [
+                { q: "Apa warna daun pada tumbuh-tumbuhan yang sehat?", a: ["Hijau", "Merah", "Biru", "Ungu"], correct: "A" },
+                { q: "Hewan manakah yang memiliki suara 'Guk Guk'?", a: ["Kucing", "Anjing", "Sapi", "Ayam"], correct: "B" },
+                { q: "Berapakah jumlah jari pada satu tangan manusia?", a: ["3", "4", "5", "10"], correct: "C" },
+                { q: "Benda langit apa yang terbit di pagi hari dan menyinari bumi?", a: ["Bulan", "Bintang", "Matahari", "Awan"], correct: "C" },
+                { q: "Buah pisang yang sudah matang umumnya berwarna apa?", a: ["Kuning", "Hitam", "Biru", "Merah"], correct: "A" },
+                { q: "Hewan apa yang hidup di air dan berenang menggunakan sirip?", a: ["Burung", "Ikan", "Kelinci", "Kambing"], correct: "B" },
+                { q: "Setelah angka 2, angka berapakah selanjutnya?", a: ["1", "3", "4", "5"], correct: "B" },
+                { q: "Benda apa yang digunakan untuk menulis di buku?", a: ["Sendok", "Pensil", "Sepatu", "Piring"], correct: "B" },
+                { q: "Hewan yang suka makan wortel dan melompat adalah...", a: ["Kucing", "Gajah", "Kelinci", "Ular"], correct: "C" },
+                { q: "Rasa dari gula adalah...", a: ["Asin", "Manis", "Pahit", "Asam"], correct: "B" },
+                { q: "Warna dari bendera negara Indonesia adalah...", a: ["Merah Putih", "Hijau Kuning", "Biru Putih", "Hitam Merah"], correct: "A" },
+                { q: "Suara ayam jantan di pagi hari adalah...", a: ["Meong", "Kukuruyuk", "Mbee", "Moo"], correct: "B" },
+                { q: "Benda yang digunakan untuk melindungi diri dari hujan adalah...", a: ["Topi", "Payung", "Kacamata", "Kipas"], correct: "B" },
+                { q: "Susu sapi pada umumnya berwarna...", a: ["Merah", "Cokelat", "Putih", "Hijau"], correct: "C" },
+                { q: "Kendaraan yang berjalan di atas rel adalah...", a: ["Mobil", "Kereta Api", "Pesawat", "Kapal"], correct: "B" }
+            ],
+            SD: [
+                { q: "Ibu kota Negara Kesatuan Republik Indonesia saat ini adalah...", a: ["Surabaya", "Jakarta", "Bandung", "Medan"], correct: "B" },
+                { q: "Hasil dari 12 dikali 5 adalah...", a: ["50", "55", "60", "65"], correct: "C" },
+                { q: "Proses pembuatan makanan pada tumbuhan hijau dengan bantuan cahaya dinamakan...", a: ["Respirasi", "Fotosintesis", "Evaporasi", "Oksidasi"], correct: "B" },
+                { q: "Lagu kebangsaan Indonesia Raya diciptakan oleh...", a: ["W.R. Supratman", "C. Simanjuntak", "Ismail Marzuki", "Ibu Sud"], correct: "A" },
+                { q: "Candi Borobudur merupakan peninggalan bersejarah dari agama...", a: ["Hindu", "Buddha", "Islam", "Konghucu"], correct: "B" },
+                { q: "Alat pernapasan utama pada ikan adalah...", a: ["Paru-paru", "Kulit", "Insang", "Trakea"], correct: "C" },
+                { q: "Planet terdekat dari Matahari dalam sistem tata surya kita adalah...", a: ["Venus", "Merkurius", "Mars", "Bumi"], correct: "B" },
+                { q: "Sudut siku-siku memiliki besar derajat sebesar...", a: ["45°", "90°", "180°", "360°"], correct: "B" },
+                { q: "Semboyan 'Bhinneka Tunggal Ika' terdapat pada lambang negara yaitu...", a: ["Garuda Pancasila", "Bendera Merah Putih", "UUD 1945", "Tugu Monas"], correct: "A" },
+                { q: "Hewan pemakan daging disebut juga dengan kelompok...", a: ["Herbivora", "Karnivora", "Omnivora", "Insectivora"], correct: "B" },
+                { q: "Penjumlahan 3/4 + 1/4 menghasilkan...", a: ["1", "1/2", "3/8", "2"], correct: "A" },
+                { q: "Peristiwa perubahan wujud zat dari padat menjadi gas dinamakan...", a: ["Mencair", "Menghablur", "Menyublim", "Mengembun"], correct: "C" },
+                { q: "Tari Saman yang terkenal berasal dari provinsi...", a: ["Bali", "Aceh", "Jawa Barat", "Papua"], correct: "B" },
+                { q: "Pancasila terdiri dari berapa sila?", a: ["4", "5", "6", "7"], correct: "B" },
+                { q: "Zat hijau daun pada tumbuhan disebut...", a: ["Stomata", "Klorofil", "Kambium", "Vakuola"], correct: "B" }
+            ],
+            SMP: [
+                { q: "Siapakah wakil presiden Indonesia yang pertama?", a: ["Mohammad Hatta", "Soekarno", "Sutan Sjahrir", "Adam Malik"], correct: "A" },
+                { q: "Organel sel yang berfungsi sebagai tempat pembentukan energi (respirasi sel) adalah...", a: ["Ribosom", "Mitokondria", "Lisosom", "Badan Golgi"], correct: "B" },
+                { q: "Teorema Pythagoras berlaku untuk segitiga berjenis...", a: ["Sama Sisi", "Sama Kaki", "Siku-siku", "Sembarang"], correct: "C" },
+                { q: "Unsur kimia dengan lambang 'Fe' adalah...", a: ["Fluor", "Besi (Ferrum)", "Fosfor", "Fransium"], correct: "B" },
+                { q: "Organisasi ASEAN didirikan pada tahun 1967 melalui deklarasi...", a: ["Bangkok", "Bogor", "Jakarta", "Manila"], correct: "A" },
+                { q: "Hukum Newton I sering juga disebut sebagai hukum...", a: ["Aksi-Reaksi", "Kelembaman (Inersia)", "Gravitasi", "Kekekalan Energi"], correct: "B" },
+                { q: "Komoditas rempah-rempah yang menjadi daya tarik utama bangsa Eropa datang ke Maluku adalah...", a: ["Padi & Jagung", "Cengkeh & Pala", "Teh & Kopi", "Tebu & Karet"], correct: "B" },
+                { q: "Nilai x dari persamaan 2x + 8 = 20 adalah...", a: ["4", "5", "6", "7"], correct: "C" },
+                { q: "Peristiwa Sumpah Pemuda terjadi pada tanggal...", a: ["17 Agustus 1945", "28 Oktober 1928", "10 November 1945", "20 Mei 1908"], correct: "B" },
+                { q: "Gas yang paling dominan menyusun atmosfer bumi adalah...", a: ["Oksigen", "Nitrogen", "Karbondioksida", "Argon"], correct: "B" },
+                { q: "Lembaga tinggi negara di Indonesia yang berwenang mengubah dan menetapkan UUD adalah...", a: ["DPR", "MA", "MPR", "President"], correct: "C" },
+                { q: "Zat tunggal yang tidak dapat diuraikan lagi menjadi zat yang lebih sederhana secara kimia disebut...", a: ["Unsur", "Senyawa", "Campuran", "Larutan"], correct: "A" },
+                { q: "Benua terbesar di dunia berdasarkan luas wilayahnya adalah...", a: ["Afrika", "Amerika", "Asia", "Eropa"], correct: "C" },
+                { q: "Satuan Internasional (SI) untuk mengukur gaya adalah...", a: ["Joule", "Pascal", "Newton", "Watt"], correct: "C" },
+                { q: "Candi Prambanan dibangun sebagai tempat peribadatan agama...", a: ["Buddha", "Hindu", "Islam", "Konghucu"], correct: "B" }
+            ],
+            SMA: [
+                { q: "Siapakah pemrakarsa teori evolusi melalui seleksi alam?", a: ["Gregor Mendel", "Charles Darwin", "Jean-Baptiste Lamarck", "Louis Pasteur"], correct: "B" },
+                { q: "Turunan pertama dari fungsi f(x) = 3x^2 + 4x - 5 adalah...", a: ["f'(x) = 6x + 4", "f'(x) = 3x + 4", "f'(x) = 6x^2", "f'(x) = 6x - 5"], correct: "A" },
+                { q: "Perjanjian yang secara resmi menandai pengakuan kedaulatan Indonesia oleh Belanda pada tahun 1949 adalah...", a: ["Linggarjati", "Renville", "KMB (Konferensi Meja Bundar)", "Roem-Royen"], correct: "C" },
+                { q: "Gas rumah kaca yang memiliki pengaruh terbesar terhadap pemanasan global akibat aktivitas manusia adalah...", a: ["Metana", "Karbondioksida (CO2)", "CFC", "Nitrus Oksida"], correct: "B" },
+                { q: "Penulis novel monumental 'Bumi Manusia' adalah...", a: ["Pramoedya Ananta Toer", "Chairil Anwar", "Sutan Takdir Alisjahbana", "Rendra"], correct: "A" },
+                { q: "Alat untuk mengukur arus listrik dalam rangkaian dinamakan...", a: ["Voltmeter", "Amperemeter", "Ohmmeter", "Barometer"], correct: "B" },
+                { q: "Struktur DNA berbentuk ganda terpilin yang dikenal dengan istilah...", a: ["Single Helix", "Double Helix", "Triple Helix", "Linear Strand"], correct: "B" },
+                { q: "Siapakah ekonom yang dikenal sebagai 'Bapak Ekonomi Modern' penulis buku 'The Wealth of Nations'?", a: ["John Maynard Keynes", "Adam Smith", "Karl Marx", "David Ricardo"], correct: "B" },
+                { q: "Berapakah hasil dari Logaritma ^2log 32?", a: ["3", "4", "5", "6"], correct: "C" },
+                { q: "Negara anggota PBB yang memiliki Hak Veto di Dewan Keamanan terdiri dari berapa negara?", a: ["3", "5", "7", "10"], correct: "B" },
+                { q: "Hormon pada tumbuhan yang memicu pematangan buah adalah...", a: ["Auksin", "Giberelin", "Gas Etilen", "Sitokinin"], correct: "C" },
+                { q: "Organisasi PBB yang membidangi Pendidikan, Ilmu Pengetahuan, dan Kebudayaan adalah...", a: ["UNICEF", "WHO", "UNESCO", "UNHCR"], correct: "C" },
+                { q: "Proses pembelahan sel yang menghasilkan sel anakan dengan jumlah kromosom sama dengan sel induk disebut...", a: ["Mitosis", "Meiosis", "Amitosis", "Amitotik"], correct: "A" },
+                { q: "Unsur radioaktif alami dengan nomor atom terbesar yang ditemukan di bumi adalah...", a: ["Plutonium", "Uranium", "Radium", "Thorium"], correct: "B" },
+                { q: "Filsuf Yunani Kuno yang merupakan guru dari Alexander Agung adalah...", a: ["Socrates", "Plato", "Aristoteles", "Pythagoras"], correct: "C" }
+            ],
+            SMK: [
+                { q: "Protokol standar yang digunakan untuk mengonfigurasi IP address secara otomatis pada jaringan komputer adalah...", a: ["DNS", "DHCP", "FTP", "HTTP"], correct: "B" },
+                { q: "Komponen mesin kendaraan yang berfungsi memercikkan bunga api pada proses pembakaran adalah...", a: ["Karburator", "Busi", "Injektor", "Radiator"], correct: "B" },
+                { q: "Dalam akuntansi, persamaan dasar akuntansi yang benar adalah...", a: ["Aset = Liabilitas + Ekuitas", "Aset = Liabilitas - Ekuitas", "Ekuitas = Aset + Liabilitas", "Liabilitas = Ekuitas - Aset"], correct: "A" },
+                { q: "Alat ukur presisi tinggi yang digunakan untuk mengukur ketebalan benda tipis hingga ketelitian 0,01 mm adalah...", a: ["Jangka Sorong", "Mikrometer Sekrup", "Penggaris Baja", "Dial Indicator"], correct: "B" },
+                { q: "Perangkat keras (hardware) komputer yang berfungsi memproses grafik dan tampilan visual pada layar adalah...", a: ["CPU", "RAM", "GPU / VGA", "Power Supply"], correct: "C" },
+                { q: "Pada teknik pengelasan, singkatan dari proses las SMAW adalah...", a: ["Shielded Metal Arc Welding", "Submerged Metal Arc Welding", "Solid Metal Arc Welding", "Sheet Metal Arc Welding"], correct: "A" },
+                { q: "Format file gambar yang mendukung transparansi latar belakang secara standar adalah...", a: ["JPG", "PNG", "BMP", "TXT"], correct: "B" },
+                { q: "Port standar yang digunakan untuk transmisi video dan audio digital berkualitas tinggi pada monitor/TV modern adalah...", a: ["VGA", "DVI", "HDMI", "RCA"], correct: "C" },
+                { q: "Fungsi utama dari pelumas (oli) pada mesin kendaraan adalah...", a: ["Menambah Kecepatan", "Mengurangi Gesekan & Mengontrol Suhu", "Menghemat Bahan Bakar", "Memperbesar Tenaga"], correct: "B" },
+                { q: "Dalam dunia kelistrikan, rumus Hukum Ohm adalah...", a: ["V = I x R", "P = V x I", "I = V x P", "R = V x P"], correct: "A" },
+                { q: "Istilah 'K3' dalam lingkungan kerja industri/SMK merupakan singkatan dari...", a: ["Keselamatan, Kesehatan, dan Keamanan Kerja", "Keselamatan dan Kesehatan Kerja", "Ketertiban, Kebersihan, dan Kesehatan Kerja", "Keamanan dan Keselamatan Kerja"], correct: "B" },
+                { q: "Alat kelistrikan yang berfungsi memutus arus listrik secara otomatis saat terjadi korsleting adalah...", a: ["Sakelar", "MCB (Circuit Breaker)", "Stopkontak", "Transformer"], correct: "B" },
+                { q: "Komponen utama yang mengontrol seluruh operasi pada sistem rem hidrolik adalah...", a: ["Master Silinder", "Kanvas Rem", "Piringan Cakram", "Pedal Rem"], correct: "A" },
+                { q: "Dalam desain grafis, mode warna yang digunakan khusus untuk keperluan cetak (printing) adalah...", a: ["RGB", "CMYK", "Grayscale", "HSB"], correct: "B" },
+                { q: "Perangkat jaringan yang berfungsi menghubungkan dua jaringan dengan segmen/subnet berbeda adalah...", a: ["Switch", "Hub", "Router", "Kabel UTP"], correct: "C" }
+            ],
+            KULIAH: [
+                { q: "Siapakah pencetus teori kuantum fisika yang terkenal dengan konsep dualisme gelombang-partikel?", a: ["Max Planck", "Albert Einstein", "Niels Bohr", "Erwin Schrödinger"], correct: "A" },
+                { q: "Metode penelitian yang bertujuan menguji hipotesis melalui manipulasi variabel independen disebut...", a: ["Kualitatif Deskriptif", "Eksperimental", "Studi Kasus", "Etnografi"], correct: "B" },
+                { q: "Dalam ilmu hukum, asas yang menyatakan bahwa undang-undang tidak boleh berlaku surut dinamakan...", a: ["Lex Specialis Derogat Legi Generali", "Asas Legalitas (Non-Retroaktif)", "Presumption of Innocence", "Lex Superior Derogat Legi Inferiori"], correct: "B" },
+                { q: "Partikel subatomik yang dipercaya memberikan massa pada partikel dasar lain (dikenal 'God Particle') adalah...", a: ["Quark", "Higgs Boson", "Lepton", "Photon"], correct: "B" },
+                { q: "Siapakah sosiolog yang mempopulerkan teori 'Struktural Fungsionalisme'?", a: ["Max Weber", "Emile Durkheim", "Talcott Parsons", "Karl Marx"], correct: "C" },
+                { q: "Struktur data linier yang menerapkan prinsip LIFO (Last In First Out) dinamakan...", a: ["Queue", "Stack", "Array", "Linked List"], correct: "B" },
+                { q: "Proses biokimia konversi glukosa menjadi asam piruvat di dalam sitoplasma dinamakan...", a: ["Glikolisis", "Siklus Krebs", "Transpor Elektron", "Dekarboksilasi Oksidatif"], correct: "A" },
+                { q: "Siapakah tokoh filsuf modern yang terkenal dengan ungkapan 'Cogito, ergo sum'?", a: ["Immanuel Kant", "Rene Descartes", "John Locke", "Friedrich Nietzsche"], correct: "B" },
+                { q: "Fenomena ekonomi di mana tingkat inflasi tinggi terjadi secara bersamaan dengan stagnasi pertumbuhan ekonomi disebut...", a: ["Deflasi", "Stagflasi", "Hiperinflasi", "Resesi"], correct: "B" },
+                { q: "Perjanjian internasional tentang pengurangan emisi gas rumah kaca yang disepakati tahun 1997 di Jepang adalah...", a: ["Protokol Kyoto", "Perjanjian Paris", "Konvensi Jenewa", "Protokol Montreal"], correct: "A" },
+                { q: "Algoritma enkripsi asimetris yang paling populer berdasarkan faktor kesusahan faktorisasi bilangan prima adalah...", a: ["AES", "DES", "RSA", "Blowfish"], correct: "C" },
+                { q: "Filsuf kontemporer pencetus teori 'Communicative Action' dan konsep 'Public Sphere' adalah...", a: ["Michel Foucault", "Jürgen Habermas", "Jacques Derrida", "Slavoj Žižek"], correct: "B" },
+                { q: "Zat kimia neurotransmiter utama di otak yang berperan penting dalam perasaan senang, motivasi, dan penghargaan adalah...", a: ["Serotonin", "Dopamin", "Asetilkolin", "GABA"], correct: "B" },
+                { q: "Dalam kalkulus, Teorema Dasar Kalkulus menghubungkan dua konsep utama yaitu...", a: ["Limit & Kontinuitas", "Diferensial & Integral", "Vektor & Matriks", "Deret & Urutan"], correct: "B" },
+                { q: "Penghargaan tertinggi di dunia untuk bidang matematika (setara Hadiah Nobel) dinamakan...", a: ["Turing Award", "Fields Medal", "Pritzker Prize", "Pulitzer Prize"], correct: "B" }
+            ]
+        };
+
+        // State Game Variables
+        let currentGrade = "";
+        let currentLevel = 0; // 0 to 14
+        let activeQuestions = [];
+        let currentQuestion = null;
+        let selectedOption = null;
+        let pendingOption = null; // Menampung sementara jawaban sebelum dikonfirmasi
+        let lifelinesUsed = { '5050': false, 'phone': false, 'audience': false };
+        let soundEnabled = true;
+
+        // Audio Effects (Web Audio API Synthesizer)
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        // Fitur Suara Pembawa Acara (Host Text-to-Speech) - Disesuaikan agar lebih natural, tenang & santai
+        function speakHost(text) {
+            if (!soundEnabled) return;
+            if ('speechSynthesis' in window) {
+                // Hentikan suara host sebelumnya jika masih berbicara
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID'; // Bahasa Indonesia
+                utterance.rate = 0.88; // Kecepatan bicara yang lebih tenang dan tidak terburu-buru
+                utterance.pitch = 0.92; // Nada suara hangat, santai, dan berwibawa
+
+                // Cari vokal bahasa Indonesia terbaik di browser
+                const voices = window.speechSynthesis.getVoices();
+                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+                if (idVoice) utterance.voice = idVoice;
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Pembantu konversi nominal angka uang ke teks pengucapan bahasa indonesia secara natural
+        function formatPrizeToWords(amountStr) {
+            const cleanNum = parseInt(amountStr.replace(/\./g, ''), 10);
+            if (cleanNum === 50000) return "lima puluh ribu rupiah";
+            if (cleanNum === 100000) return "seratus ribu rupiah";
+            if (cleanNum === 200000) return "dua ratus ribu rupiah";
+            if (cleanNum === 300000) return "tiga ratus ribu rupiah";
+            if (cleanNum === 500000) return "lima ratus ribu rupiah";
+            if (cleanNum === 1000000) return "satu juta rupiah";
+            if (cleanNum === 2000000) return "dua juta rupiah";
+            if (cleanNum === 4000000) return "empat juta rupiah";
+            if (cleanNum === 8000000) return "delapan juta rupiah";
+            if (cleanNum === 16000000) return "enam belas juta rupiah";
+            if (cleanNum === 32000000) return "tiga puluh dua juta rupiah";
+            if (cleanNum === 64000000) return "enam puluh empat juta rupiah";
+            if (cleanNum === 125000000) return "seratus dua puluh lima juta rupiah";
+            if (cleanNum === 250000000) return "dua ratus lima puluh juta rupiah";
+            if (cleanNum === 1000000000) return "satu miliar rupiah";
+            return `${amountStr} rupiah`;
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.15); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.3); // G5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.setValueAtTime(164.81, now + 0.2);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                } else if (type === 'win') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.setValueAtTime(554.37, now + 0.2);
+                    osc.frequency.setValueAtTime(659.25, now + 0.4);
+                    osc.frequency.setValueAtTime(880, now + 0.6);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+                    osc.start(now);
+                    osc.stop(now + 1.2);
+                }
+            } catch (e) {
+                console.log("Audio Error:", e);
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            if (!soundEnabled && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            const btn = document.getElementById('audio-btn');
+            btn.innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
+        }
+
+        // Render Hadiah Ladder
+        function renderMoneyLadder() {
+            const container = document.getElementById('money-ladder');
+            container.innerHTML = '';
+            
+            for (let i = 14; i >= 0; i--) {
+                const itemNum = i + 1;
+                const prize = PRIZE_LADDER[i];
+                const isSafe = (itemNum === 5 || itemNum === 10 || itemNum === 15);
+                const isActive = (i === currentLevel);
+
+                const div = document.createElement('div');
+                div.className = `ladder-item flex justify-between px-3 py-1 rounded transition ${isSafe ? 'safe-zone text-yellow-300 font-bold' : 'text-slate-400'} ${isActive ? 'active' : ''}`;
+                
+                div.innerHTML = `
+                    <span>${itemNum} <i class="fa-solid fa-rhombus text-[9px] mx-1"></i></span>
+                    <span>Rp ${prize}</span>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // Fungsi Memanggil Gemini API untuk Membuat Soal Dinamis Online
+        async function fetchQuestionsFromGemini(grade) {
+            const apiKey = ""; // Disertakan otomatis pada runtime oleh lingkungan Canvas
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const prompt = `Buatkan tepat 15 pertanyaan pilihan ganda unik dan acak untuk kuis "Who Wants to Be a Millionaire" tingkat pendidikan "${grade}".
+Tingkat kesulitan harus meningkat dari soal 1 (sangat mudah) hingga soal 15 (sangat sulit).
+
+Berikan output secara ketat HANYA berupa JSON Array tanpa format markdown lain, dengan skema berikut:
+[
+  {
+    "q": "Teks pertanyaan?",
+    "a": ["Jawaban A", "Jawaban B", "Jawaban C", "Jawaban D"],
+    "correct": "A"
+  }
+]
+Ketentuan:
+- "correct" harus bernilai salah satu dari "A", "B", "C", atau "D".
+- "a" harus berupa array berisi 4 string pilihan jawaban.
+- Bebas dari pengulangan soal standar. Buat soal variatif baru!`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!jsonText) throw new Error("Format JSON dari API tidak valid.");
+            
+            const parsed = JSON.parse(jsonText);
+            if (!Array.isArray(parsed) || parsed.length < 15) throw new Error("Data pertanyaan tidak lengkap.");
+
+            return parsed.slice(0, 15);
+        }
+
+        // Mulai Game dengan Memilih Jenjang
+        async function selectGrade(grade) {
+            playSound('click');
+            currentGrade = grade;
+            currentLevel = 0;
+            lifelinesUsed = { '5050': false, 'phone': false, 'audience': false };
+
+            // Tampilkan Loading Modal
+            document.getElementById('loading-modal').classList.remove('hidden');
+
+            try {
+                // Mencoba buat soal baru secara online via Gemini API
+                activeQuestions = await fetchQuestionsFromGemini(grade);
+            } catch (err) {
+                console.warn("Gagal memuat soal online via AI, beralih ke pengacak soal cadangan:", err);
+                // Fallback: Acak pertanyaan dari bank soal lokal jika offline / error
+                const baseBank = QUESTION_BANK[grade] || QUESTION_BANK['SD'];
+                activeQuestions = [...baseBank].sort(() => Math.random() - 0.5);
+            } finally {
+                document.getElementById('loading-modal').classList.add('hidden');
+            }
+            
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('grid');
+            document.getElementById('current-level-tag').innerText = `JENJANG: ${grade}`;
+
+            ['5050', 'phone', 'audience'].forEach(id => {
+                const btn = document.getElementById(`lifeline-${id}`);
+                btn.disabled = false;
+                btn.classList.remove('opacity-30');
+            });
+
+            loadQuestion();
+        }
+
+        // Memuat Pertanyaan Sesuai Level Saat Ini
+        function loadQuestion() {
+            currentQuestion = activeQuestions[currentLevel];
+            selectedOption = null;
+            pendingOption = null;
+
+            document.getElementById('confirm-box').classList.add('hidden');
+
+            ['A', 'B', 'C', 'D'].forEach(opt => {
+                const btn = document.getElementById(`btn-opt-${opt}`);
+                btn.className = "option-btn p-4 rounded-xl flex items-center text-left space-x-3 text-slate-200 font-semibold text-base md:text-lg";
+                btn.disabled = false;
+                btn.style.visibility = "visible";
+            });
+
+            document.getElementById('question-number-tag').innerText = `PERTANYAAN ${currentLevel + 1} DARI 15`;
+            document.getElementById('question-prize-tag').innerText = `Rp ${PRIZE_LADDER[currentLevel]}`;
+            document.getElementById('question-text').innerText = currentQuestion.q;
+
+            document.getElementById('text-opt-A').innerText = currentQuestion.a[0];
+            document.getElementById('text-opt-B').innerText = currentQuestion.a[1];
+            document.getElementById('text-opt-C').innerText = currentQuestion.a[2];
+            document.getElementById('text-opt-D').innerText = currentQuestion.a[3];
+
+            renderMoneyLadder();
+
+            // Format pembacaan host yang santai, lugas, dan tenang
+            const prizeSpoken = formatPrizeToWords(PRIZE_LADDER[currentLevel]);
+            const textToSpeak = `Pertanyaan nomor ${currentLevel + 1}, untuk ${prizeSpoken}... ${currentQuestion.q}... Pilihan A: ${currentQuestion.a[0]}. Pilihan B: ${currentQuestion.a[1]}. Pilihan C: ${currentQuestion.a[2]}. Pilihan D: ${currentQuestion.a[3]}.`;
+            speakHost(textToSpeak);
+        }
+
+        // Memilih Jawaban (Menampilkan Konfirmasi Ya/Tidak)
+        function selectOption(opt) {
+            if (selectedOption !== null) return;
+            playSound('click');
+            pendingOption = opt;
+
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            // Reset highlight semua opsi
+            ['A', 'B', 'C', 'D'].forEach(o => {
+                const btn = document.getElementById(`btn-opt-${o}`);
+                btn.classList.remove('selected');
+            });
+
+            // Highlight opsi yang dipilih sementara
+            const pendingBtn = document.getElementById(`btn-opt-${opt}`);
+            pendingBtn.classList.add('selected');
+
+            // Tampilkan Box Konfirmasi
+            const optIndex = ['A', 'B', 'C', 'D'].indexOf(opt);
+            const optText = currentQuestion.a[optIndex];
+            document.getElementById('selected-opt-label').innerText = `${opt}: ${optText}`;
+            document.getElementById('confirm-box').classList.remove('hidden');
+
+            speakHost(`Kamu memilih jawaban ${opt}. Apakah kamu yakin ingin mengunci jawaban ini?`);
+        }
+
+        // Konfirmasi Kunci Jawaban (Ya = Proses Jawaban, Tidak = Batal)
+        function confirmLockOption(isConfirmed) {
+            playSound('click');
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            if (!isConfirmed) {
+                // Jika pilih TIDAK (Batal)
+                document.getElementById('confirm-box').classList.add('hidden');
+                if (pendingOption) {
+                    document.getElementById(`btn-opt-${pendingOption}`).classList.remove('selected');
+                    pendingOption = null;
+                }
+                speakHost("Silakan pilih kembali jawaban yang menurutmu paling tepat.");
+                return;
+            }
+
+            // Jika pilih YA (Kunci Jawaban)
+            selectedOption = pendingOption;
+            document.getElementById('confirm-box').classList.add('hidden');
+
+            const selectedBtn = document.getElementById(`btn-opt-${selectedOption}`);
+
+            // Nonaktifkan seluruh tombol opsi
+            ['A', 'B', 'C', 'D'].forEach(o => {
+                document.getElementById(`btn-opt-${o}`).disabled = true;
+            });
+
+            speakHost(`Jawaban ${selectedOption} dikunci... Mari kita lihat.`);
+
+            setTimeout(() => {
+                if (selectedOption === currentQuestion.correct) {
+                    // JAWABAN BENAR
+                    playSound('correct');
+                    selectedBtn.classList.remove('selected');
+                    selectedBtn.classList.add('correct');
+
+                    const currentPrizeSpoken = formatPrizeToWords(PRIZE_LADDER[currentLevel]);
+                    
+                    const praiseList = [
+                        "Bagus sekali, jawaban kamu tepat.",
+                        "Tenang, dan jawabanmu benar.",
+                        "Tepat sekali, pilihan yang luar biasa.",
+                        "Sangat baik, kamu berhasil menjawabnya dengan benar."
+                    ];
+                    const randomPraise = praiseList[Math.floor(Math.random() * praiseList.length)];
+                    speakHost(`${randomPraise} Kamu berhasil mendapatkan ${currentPrizeSpoken}.`);
+
+                    setTimeout(() => {
+                        if (currentLevel === 14) {
+                            playSound('win');
+                            speakHost("Selamat! Sungguh pencapaian yang sangat luar biasa. Kamu berhasil menjawab seluruh pertanyaan dan membawa pulang hadiah utama Satu Miliar Rupiah!");
+                            showModal(
+                                "SELAMAT! ANDA MILIONER!",
+                                `<div class="text-center">
+                                    <i class="fa-solid fa-trophy text-6xl text-yellow-400 mb-4 animate-bounce"></i>
+                                    <p class="text-lg font-bold text-white mb-2">Luar Biasa!</p>
+                                    <p>Anda telah berhasil menjawab 15 pertanyaan tingkat <span class="text-yellow-400 font-bold">${currentGrade}</span> dan membawa pulang hadiah utama:</p>
+                                    <div class="text-3xl font-tech font-extrabold text-yellow-400 my-4">Rp 1.000.000.000</div>
+                                </div>`,
+                                "Main Lagi",
+                                resetGame
+                            );
+                        } else {
+                            currentLevel++;
+                            loadQuestion();
+                        }
+                    }, 3500);
+
+                } else {
+                    // JAWABAN SALAH
+                    playSound('wrong');
+                    selectedBtn.classList.remove('selected');
+                    selectedBtn.classList.add('wrong');
+
+                    const correctBtn = document.getElementById(`btn-opt-${currentQuestion.correct}`);
+                    correctBtn.classList.add('correct');
+
+                    let guaranteedPrize = "0";
+                    if (currentLevel >= 9) guaranteedPrize = PRIZE_LADDER[9];
+                    else if (currentLevel >= 4) guaranteedPrize = PRIZE_LADDER[4];
+
+                    speakHost(`Sayang sekali, jawaban kamu masih kurang tepat... Jawaban yang benar adalah pilihan ${currentQuestion.correct}. Permainan berakhir di sini.`);
+
+                    setTimeout(() => {
+                        showModal(
+                            "JAWABAN SALAH!",
+                            `<div class="text-center">
+                                <i class="fa-solid fa-circle-xmark text-6xl text-red-500 mb-4"></i>
+                                <p class="text-slate-300 mb-2">Jawaban yang benar adalah <span class="text-yellow-400 font-bold">${currentQuestion.correct}</span>.</p>
+                                <p class="text-sm text-slate-400 mb-4">Permainan berakhir di Pertanyaan ke-${currentLevel + 1}.</p>
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                    <span class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Hadiah Titik Aman Yang Diperoleh:</span>
+                                    <span class="text-2xl font-tech font-bold text-yellow-400">Rp ${guaranteedPrize}</span>
+                                </div>
+                            </div>`,
+                            "Coba Lagi",
+                            resetGame
+                        );
+                    }, 2500);
+                }
+            }, 1800);
+        }
+
+        // Bantuan (Lifelines)
+        function useLifeline(type) {
+            if (lifelinesUsed[type]) return;
+            playSound('click');
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            if (type === '5050') {
+                lifelinesUsed['5050'] = true;
+                document.getElementById('lifeline-5050').disabled = true;
+
+                const correct = currentQuestion.correct;
+                const wrongOpts = ['A', 'B', 'C', 'D'].filter(o => o !== correct);
+                
+                wrongOpts.sort(() => Math.random() - 0.5);
+                const toHide = wrongOpts.slice(0, 2);
+
+                toHide.forEach(opt => {
+                    const btn = document.getElementById(`btn-opt-${opt}`);
+                    btn.style.visibility = "hidden";
+                });
+                speakHost("Bantuan lima puluh lima puluh digunakan... Dua pilihan jawaban yang salah telah dihilangkan.");
+
+            } else if (type === 'phone') {
+                lifelinesUsed['phone'] = true;
+                document.getElementById('lifeline-phone').disabled = true;
+
+                const correct = currentQuestion.correct;
+                const friendSuggest = (Math.random() < 0.85) ? correct : ['A', 'B', 'C', 'D'].filter(o => o !== correct)[0];
+
+                speakHost(`Teman kamu menyarankan untuk memilih jawaban ${friendSuggest}.`);
+
+                showModal(
+                    "PHONE A FRIEND",
+                    `<div class="text-left space-y-3">
+                        <div class="flex items-center space-x-3 bg-slate-950 p-3 rounded-lg border border-blue-900">
+                            <i class="fa-solid fa-user-doctor text-3xl text-amber-400"></i>
+                            <div>
+                                <p class="font-bold text-white text-sm">Teman Pintar Anda</p>
+                                <p class="text-xs text-blue-300">Menjawab melalui telepon...</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-200 italic bg-blue-950/40 p-4 rounded-lg border border-blue-800/40">
+                            "Halo! Menurut saya untuk soal ini, saya cukup yakin jawabannya adalah pilihan <span class="font-bold text-yellow-400">${friendSuggest}</span>."
+                        </p>
+                    </div>`,
+                    "Terima Kasih",
+                    closeModal
+                );
+
+            } else if (type === 'audience') {
+                lifelinesUsed['audience'] = true;
+                document.getElementById('lifeline-audience').disabled = true;
+
+                const correct = currentQuestion.correct;
+                const opts = ['A', 'B', 'C', 'D'];
+                let percentages = {};
+                let remaining = 100;
+
+                const correctPct = Math.floor(Math.random() * 25) + 60;
+                percentages[correct] = correctPct;
+                remaining -= correctPct;
+
+                const wrongOpts = opts.filter(o => o !== correct);
+                const p1 = Math.floor(Math.random() * remaining);
+                percentages[wrongOpts[0]] = p1;
+                remaining -= p1;
+
+                const p2 = Math.floor(Math.random() * remaining);
+                percentages[wrongOpts[1]] = p2;
+                percentages[wrongOpts[2]] = remaining - p2;
+
+                speakHost("Ini adalah hasil suara dari seluruh penonton di studio.");
+
+                let barsHtml = opts.map(o => `
+                    <div class="flex items-center space-x-2 my-1">
+                        <span class="w-6 font-bold text-yellow-400">${o}:</span>
+                        <div class="flex-1 bg-slate-800 h-6 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                            <div class="bg-gradient-to-r from-blue-600 to-amber-500 h-full rounded-full text-[10px] font-bold text-white flex items-center justify-end pr-2 transition-all duration-1000" style="width: ${percentages[o]}%">
+                                ${percentages[o]}%
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                showModal(
+                    "ASK THE AUDIENCE",
+                    `<div class="text-left">
+                        <p class="text-xs text-slate-300 mb-3 text-center">Hasil polling penonton di studio:</p>
+                        ${barsHtml}
+                    </div>`,
+                    "Mengerti",
+                    closeModal
+                );
+            }
+        }
+
+        // Fitur Menyerah (Walk Away)
+        function walkAway() {
+            if (currentLevel === 0) {
+                resetGame();
+                return;
+            }
+            playSound('click');
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            const prizeTaken = PRIZE_LADDER[currentLevel - 1];
+            const prizeTakenSpoken = formatPrizeToWords(prizeTaken);
+            speakHost(`Keputusan yang bijak... Kamu memilih berhenti dan membawa pulang uang sebesar ${prizeTakenSpoken}. Selamat.`);
+
+            showModal(
+                "BERHENTI BERMAIN",
+                `<div class="text-center">
+                    <i class="fa-solid fa-handshake text-5xl text-amber-400 mb-3"></i>
+                    <p class="text-slate-200 mb-3">Anda memutuskan untuk berhenti bermain dan mengamankan uang tunai.</p>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-yellow-500/40">
+                        <span class="text-xs text-slate-400 uppercase tracking-wider block mb-1">Total Hadiah Yang Anda Bawa Pulang:</span>
+                        <span class="text-3xl font-tech font-extrabold text-yellow-400">Rp ${prizeTaken}</span>
+                    </div>
+                </div>`,
+                "Main Lagi",
+                resetGame
+            );
+        }
+
+        // Tampilkan Modal Dialog
+        function showModal(title, bodyHtml, btnText, callback) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = bodyHtml;
+            const primaryBtn = document.getElementById('modal-primary-btn');
+            primaryBtn.innerText = btnText;
+            primaryBtn.onclick = () => {
+                callback();
+            };
+            document.getElementById('game-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('game-modal').classList.add('hidden');
+        }
+
+        // Reset Kembali ke Pemilihan Jenjang
+        function resetGame() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            closeModal();
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('grid');
+            document.getElementById('selection-screen').classList.remove('hidden');
+            document.getElementById('current-level-tag').innerText = "Pilih Jenjang Terlebih Dahulu";
+        }
+
+        // Navigasi Kembali / Home dengan Konfirmasi
+        function goToHome() {
+            if (currentGrade !== "" && !document.getElementById('game-screen').classList.contains('hidden')) {
+                confirmBackToSelection();
+            } else {
+                resetGame();
+            }
+        }
+
+        function confirmBackToSelection() {
+            playSound('click');
+            showModal(
+                "GANTI JENJANG PENDIDIKAN?",
+                `<div class="text-center">
+                    <i class="fa-solid fa-circle-question text-5xl text-amber-400 mb-3"></i>
+                    <p class="text-slate-200">Apakah Anda yakin ingin keluar dari kuis saat ini dan memilih jenjang pendidikan lainnya?</p>
+                    <p class="text-xs text-slate-400 mt-2">*Progres kuis saat ini tidak akan disimpan.</p>
+                </div>`,
+                "Ya, Ganti Jenjang",
+                resetGame
+            );
+        }
+    </script>
+</body>
+</html>
