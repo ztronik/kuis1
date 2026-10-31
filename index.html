@@ -100,6 +100,17 @@
         </div>
     </header>
 
+    <!-- BANNER KHUSUS MOBILE UNTUK AKTIFKAN SUARA -->
+    <div id="mobile-sound-banner" class="bg-gradient-to-r from-amber-600 to-yellow-600 text-slate-950 font-bold px-4 py-2 text-center text-xs md:text-sm flex items-center justify-between shadow-lg z-10">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-volume-high text-lg animate-bounce"></i>
+            <span>Main di HP? Ketuk tombol ini agar suara pembawa acara aktif!</span>
+        </div>
+        <button onclick="enableMobileAudio()" class="bg-slate-950 text-amber-400 px-3 py-1 rounded-full text-xs font-tech font-bold hover:bg-slate-900 transition">
+            AKTIFKAN SUARA
+        </button>
+    </div>
+
     <!-- MAIN CONTAINER -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 flex flex-col justify-center">
 
@@ -438,8 +449,9 @@
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
         let availableVoices = [];
+        let isAudioUnlocked = false;
 
-        // Inisialisasi daftar suara secara asynchronous untuk hosting online (GitHub Pages)
+        // Inisialisasi daftar suara secara asynchronous untuk hosting online & HP Mobile
         function initVoices() {
             if ('speechSynthesis' in window) {
                 availableVoices = window.speechSynthesis.getVoices();
@@ -452,7 +464,7 @@
         }
         initVoices();
 
-        // Mengaktifkan Audio Context & Speech Synthesis lewat gesture pengguna
+        // Mengaktifkan Audio Context & Speech Synthesis khusus Seluler (Mobile/HP)
         function unlockAudio() {
             if (!audioCtx) {
                 audioCtx = new AudioCtx();
@@ -460,39 +472,79 @@
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            // "Pancing" SpeechSynthesis agar diizinkan oleh browser setelah ada klik dari pengguna
-            if ('speechSynthesis' in window && availableVoices.length === 0) {
+            
+            // "Pancingan" khusus peramban seluler (Safari iOS / Chrome Mobile)
+            if ('speechSynthesis' in window && !isAudioUnlocked) {
                 availableVoices = window.speechSynthesis.getVoices();
+                // Bunyikan teks kosong untuk membuka izin audio peramban seluler
+                const dummyUtterance = new SpeechSynthesisUtterance("");
+                dummyUtterance.volume = 0;
+                window.speechSynthesis.speak(dummyUtterance);
+                isAudioUnlocked = true;
             }
         }
 
-        // Fitur Suara Pembawa Acara (Host Text-to-Speech) - Disesuaikan agar lebih natural, tenang & santai
+        // Tombol khusus Mobile untuk Aktifkan Suara
+        function enableMobileAudio() {
+            unlockAudio();
+            playSound('click');
+            const banner = document.getElementById('mobile-sound-banner');
+            if (banner) banner.classList.add('hidden');
+            speakHost("Suara pembawa acara berhasil diaktifkan. Selamat bermain!");
+        }
+
+        // Conversi Angka Hadiah ke Kata-kata Bahasa Indonesia
+        function formatPrizeToWords(amountStr) {
+            const clean = amountStr.replace(/\./g, '');
+            const num = parseInt(clean, 10);
+            if (num === 50000) return "lima puluh ribu rupiah";
+            if (num === 100000) return "seratus ribu rupiah";
+            if (num === 200000) return "dua ratus ribu rupiah";
+            if (num === 300000) return "tiga ratus ribu rupiah";
+            if (num === 500000) return "lima ratus ribu rupiah";
+            if (num === 1000000) return "satu juta rupiah";
+            if (num === 2000000) return "dua juta rupiah";
+            if (num === 4000000) return "empat juta rupiah";
+            if (num === 8000000) return "delapan juta rupiah";
+            if (num === 16000000) return "enam belas juta rupiah";
+            if (num === 32000000) return "tiga puluh dua juta rupiah";
+            if (num === 64000000) return "enam puluh empat juta rupiah";
+            if (num === 125000000) return "seratus dua puluh lima juta rupiah";
+            if (num === 250000000) return "dua ratus lima puluh juta rupiah";
+            if (num === 1000000000) return "satu miliar rupiah";
+            return amountStr + " rupiah";
+        }
+
+        // Fitur Suara Pembawa Acara (Host Text-to-Speech) - Ditambahkan pembuka pembatas suara di HP
         function speakHost(text) {
             if (!soundEnabled) return;
+            unlockAudio();
+
             if ('speechSynthesis' in window) {
                 // Hentikan suara host sebelumnya jika masih berbicara
                 window.speechSynthesis.cancel();
                 
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID'; // Bahasa Indonesia
-                utterance.rate = 0.88; // Kecepatan bicara yang lebih tenang dan tidak terburu-buru
-                utterance.pitch = 0.92; // Nada suara hangat, santai, dan berwibawa
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'id-ID'; // Bahasa Indonesia
+                    utterance.rate = 0.88; // Kecepatan bicara tenang
+                    utterance.pitch = 0.92; // Nada santai
 
-                // Cari vokal bahasa Indonesia terbaik di browser (termasuk saat online)
-                if (availableVoices.length === 0) {
-                    availableVoices = window.speechSynthesis.getVoices();
-                }
-                const idVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
-                if (idVoice) utterance.voice = idVoice;
+                    if (availableVoices.length === 0) {
+                        availableVoices = window.speechSynthesis.getVoices();
+                    }
+                    const idVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+                    if (idVoice) utterance.voice = idVoice;
 
-                window.speechSynthesis.speak(utterance);
+                    window.speechSynthesis.speak(utterance);
+                }, 100);
             }
         }
 
         function playSound(type) {
             if (!soundEnabled) return;
             try {
-                unlockAudio(); // Pastikan AudioContext di-resume saat memainkan efek suara
+                unlockAudio(); // Resume AudioContext
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.connect(gain);
